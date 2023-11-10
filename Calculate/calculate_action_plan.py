@@ -9,7 +9,6 @@ def calculate_current_stock_category(row):
         cts.Categories.TO_ORDER: row[cts.Days.RE_INDENT_DAYS] * daily_consumption,
         cts.Categories.TO_INDENT: row[cts.Days.MAXIMUM_DAYS] * daily_consumption
     }
-    print(categories_thresholds)
     current_stock = row[cts.Columns.CURRENT_STOCK]
     return next((category for category, threshold in categories_thresholds.items() if current_stock < threshold),
                 cts.Categories.OVERSTOCK)
