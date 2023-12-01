@@ -3,7 +3,7 @@ from Execute.execute import execute
 app = Flask(__name__)
 
 
-@app.route('/inventory_management', methods=['GET'])
+@app.route('/', methods=['GET'])
 def inventory_management():
     try:
         result = execute()
