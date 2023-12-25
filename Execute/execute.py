@@ -1,5 +1,6 @@
 import pandas as pd
 import requests
+from pathlib import Path
 
 import Constants.constants as cts
 from Calculate.calculate_action_plan import calculate_action_plan_and_priority
@@ -15,7 +16,9 @@ def execute():
 
 
 def read_data():
-    data = pd.read_csv('../Data/Module2.csv')
+    current_dir = Path(__file__).parent
+    csv_path = current_dir / '..' / 'Data' / 'Module2.csv'
+    data = pd.read_csv(csv_path)
     return data
 
 
