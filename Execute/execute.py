@@ -5,6 +5,9 @@ from pathlib import Path
 import Constants.constants as cts
 from Calculate.calculate_action_plan import calculate_action_plan_and_priority
 
+bucket_name = cts.bucket_name.INVENTORY_MANAGEMENT
+folder_name = cts.folder_name.DATA
+
 def execute():
     data = read_data()
     action_plan_priority = data.apply(calculate_action_plan_and_priority, axis=1)
@@ -13,21 +16,17 @@ def execute():
         data.at[i, cts.Columns.PRIORITY] = prio
     return data
 
-def post_data(data):
+def post_data(data,client_name):
     csv_data = data.to_csv(index=False)  
     s3 = boto3.client('s3')
-    bucket_name = 'b3llcurve-inventory-management'
-    folder_name = 'data/'  
-    file_name = 'data.csv' 
+    file_name = f"{client_name}.csv"
     s3.put_object(Bucket=bucket_name, Key=folder_name + file_name, Body=csv_data)
 
-def fetch_data():
+def fetch_data(client_name):
     try:
         s3 = boto3.client('s3')
-        bucket_name = 'b3llcurve-inventory-management'
-        folder_name = 'data/'  
-        file_name = 'data.csv' 
-        response=s3.get_object(Bucket=bucket_name, Key=folder_name + file_name)
+        file_name = f"{client_name}.csv"
+        response = s3.get_object(Bucket=bucket_name, Key=folder_name + file_name)
         csv_data = response['Body'].read().decode('utf-8')
         df = pd.read_csv(io.StringIO(csv_data))
         return df
@@ -40,4 +39,3 @@ def read_data():
     data = pd.read_csv(csv_path)
     return data
 
-execute()

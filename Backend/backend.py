@@ -15,7 +15,7 @@ logger.setLevel(logging.DEBUG)
 def inventory_management():
     try:
         data = execute()  
-        post_data(data) 
+        post_data(data, "Nandan Terry")  
         return jsonify({"message": "Data stored in S3 successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500    
@@ -23,7 +23,8 @@ def inventory_management():
 @app.route('/fetch_data', methods=['GET'])
 def fetch_data_endpoint():
     try:
-        fetched_data = fetch_data()
+        client_name = request.args.get('client_name')  
+        fetched_data = fetch_data(client_name)
         return fetched_data.to_json(orient='records'), 200
     except Exception as e:
         return jsonify({"error": "Failed to fetch data: " + str(e)}), 500
