@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from Execute.execute import execute
+from Execute.execute import execute, fetch_data, post_data
 from Utils.send_email import send_email
 import logging
+import pandas as pd
 from dotenv import load_dotenv
 
 app = Flask(__name__)
@@ -10,15 +11,23 @@ cors = CORS(app)
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-
 @app.route('/', methods=['GET'])
 def inventory_management():
     try:
-        result = execute()
-        return jsonify(result.to_dict(orient='records'))
+        data = execute()  
+        post_data(data, "Nandan Terry")  
+        return jsonify({"message": "Data stored in S3 successfully"}), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500    
 
+@app.route('/fetch_data', methods=['GET'])
+def fetch_data_endpoint():
+    try:
+        client_name = request.args.get('client_name')  
+        fetched_data = fetch_data(client_name)
+        return fetched_data.to_json(orient='records'), 200
+    except Exception as e:
+        return jsonify({"error": "Failed to fetch data: " + str(e)}), 500
 
 @app.route('/send-email', methods=['POST'])
 def handle_send_email():
